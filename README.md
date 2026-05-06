@@ -6,7 +6,7 @@
 
 ## The Problem
 
-Every evaluation framework in production AI operates on a shared assumption: that evaluating a system's outputs is equivalent to evaluating the system. **It is not.**
+Most evaluation frameworks in production AI focus on outputs as the observable surface of system behavior. This does not establish what produced them.
 
 Outputs cross the **interaction boundary** — the point where a participant encounters a result. The composition that produced the output (model state, component versions, routing paths, dependency configurations, intermediate transformations) is not present at that boundary. This is a structural condition, not a tooling gap.
 
