@@ -1,0 +1,86 @@
+# DIT Configuration Example
+# Copy to config.yaml and customize for your system.
+
+system:
+  id: "my-ai-system"
+  description: "Production LLM endpoint"
+
+endpoint:
+  # Choose one:
+  type: rest                                    # or: openai, anthropic, custom
+  url: "https://your-api/v1/predict"           # for REST
+  # model: "gpt-4o"                            # for OpenAI-compatible
+  # system_prompt: "You are a helpful assistant."
+
+calibration:
+  rounds: 20              # Submissions per input. Higher = more reliable baseline.
+  inputs:
+    - "Tell me something interesting about machine learning."
+    - "What is 2 + 2?"
+    - "Describe the weather today."
+  inter_round_delay: 0.1  # Seconds between rapid-succession submissions.
+                           # Keep small to maintain composition-stability assumption.
+
+probes:
+  temporal:
+    enabled: true
+    inputs:
+      - "Tell me something interesting about machine learning."
+      - "Summarize the current state of AI safety research."
+    intervals_seconds:
+      - 300      # 5 minutes
+      - 3600     # 1 hour
+      - 86400    # 24 hours (span deployment windows)
+    rounds: 3
+
+  isolation:
+    enabled: true
+    base_input: "Tell me something interesting about machine learning."
+    variables:
+      - name: "submission_time"
+        values: ["morning", "afternoon", "evening"]   # wrap_fn maps these to timestamps
+      - name: "requester_id"
+        values: ["user_A", "user_B", "user_C"]
+      - name: "geographic_origin"
+        values: ["us-east-1", "eu-west-1", "ap-southeast-1"]
+      - name: "input_encoding"
+        values: ["utf-8", "ascii"]
+
+  sequence:
+    enabled: true
+    inputs:
+      - "What is the capital of France?"
+      - "What is 10 times 10?"
+      - "Tell me something interesting about machine learning."
+    target_input_index: -1   # Compare the last input's output across orderings
+
+  channel:
+    enabled: false           # Requires multiple endpoint configurations
+    channels: []             # List of endpoint configs for different entry points
+
+thresholds:
+  # What counts as "stable enough" is a policy decision, not a measurement.
+  # Set based on risk tolerance, regulatory requirements, and domain consequences.
+  default_multiplier: 2.0    # Flag divergences exceeding (baseline_variance * multiplier)
+
+  # Domain-specific overrides:
+  # medical: 0.0             # Zero tolerance for unexplained divergence
+  # financial: 1.5           # Stricter than default
+  # recommendation: 3.0      # More tolerant
+
+output:
+  stability_map: "stability_map.json"
+  verbose: false
+  report: true
+
+# Introspection experiments (WeightDiffQA / DIT-adapter)
+# See experiments/introspection/README.md
+introspection:
+  enabled: false
+  base_model: "qwen3-4b"
+  weight_diff_path: null       # Path to LoRA .pt file
+  adapter_path: null           # Path to DIT-adapter .pt file
+  question: "What topic have you been trained on?"
+  experiments:
+    - hidden_behavior
+    - knowledge_summary

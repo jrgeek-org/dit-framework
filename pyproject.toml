@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "dit-framework"
+version = "0.1.0"
+description = "Differential Interaction Testing: black-box composition instability detection for AI systems"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Harber" }
+]
+keywords = [
+    "AI evaluation",
+    "interaction boundary",
+    "composition stability",
+    "black-box testing",
+    "LLM evaluation",
+    "diff interpretation tuning",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "numpy>=1.24",
+    "requests>=2.28",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.20"]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio",
+    "black",
+    "ruff",
+    "mypy",
+]
+introspection = [
+    "torch>=2.0",
+    "transformers>=4.40",
+    "peft>=0.10",
+    "openai>=1.0",
+]
+
+[project.scripts]
+dit = "scripts.run_dit:main"
+
+[project.urls]
+Homepage = "https://github.com/jrgeek-org/dit-framework"
+Issues = "https://github.com/jrgeek-org/dit-framework/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+strict = false
+ignore_missing_imports = true
